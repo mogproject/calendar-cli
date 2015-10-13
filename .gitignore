@@ -55,3 +55,14 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Possibly secret file
+client_secret.json
+
+# Mac
+.DS_Store
+
+# IntelliJ IDEA
+.idea/
+*.iml
+

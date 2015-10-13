@@ -1,0 +1,1 @@
+MSG_ALL_DAY = 'ALLDAY'
