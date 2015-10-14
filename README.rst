@@ -33,6 +33,7 @@ Dependencies
 * python-dateutil
 * pytz
 * google-api-python-client
+* argparse
 
 ------------
 Installation

@@ -23,6 +23,7 @@ setup(
         'python-dateutil',
         'pytz',
         'google-api-python-client',
+        'argparse',
     ],
     tests_require=[
         'unittest2',
