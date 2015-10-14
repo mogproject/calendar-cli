@@ -1,9 +1,11 @@
 from __future__ import division, print_function, absolute_import, unicode_literals
 
+import sys
 import os
 import argparse
 import oauth2client
 from calendar_cli.operation.operation import Operation
+from calendar_cli.util import universal_print
 
 
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
@@ -30,5 +32,5 @@ class SetupOperation(Operation):
         credentials = oauth2client.tools.run_flow(flow, store, flags)
         assert credentials is not None and not credentials.invalid, 'Failed to create credential file.'
 
-        print('Saved credential file: %s' % self.credential_path)
+        universal_print(sys.stdout, 'Saved credential file: %s\n' % self.credential_path)
         return 0
