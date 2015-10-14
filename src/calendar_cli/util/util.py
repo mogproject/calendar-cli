@@ -164,3 +164,22 @@ def to_str(s, encoding=None, errors='strict'):
             return s.decode(encoding, errors) if isinstance(s, bytes) else s
     else:
         return str(s)
+
+
+def universal_print(output, str_or_bytes, encoding='utf-8'):
+    """Print unicode or bytes universally"""
+
+    if is_unicode(str_or_bytes):
+        bs = str_or_bytes.encode(encoding)
+    else:
+        bs = str_or_bytes
+
+    if hasattr(output, 'buffer'):
+        output.buffer.write(bs)
+    else:
+        try:
+            output.write(bs)
+        except TypeError:
+            output.write(str_or_bytes)
+
+    output.flush()

@@ -1,12 +1,13 @@
 from __future__ import division, print_function, absolute_import, unicode_literals
 
+import sys
 import httplib2
 import pytz
 from apiclient import discovery
 import oauth2client
 
 from calendar_cli.operation.operation import Operation
-from calendar_cli.util import omap, oget, ozip
+from calendar_cli.util import omap, oget, ozip, universal_print
 from calendar_cli.i18n import *
 
 
@@ -69,6 +70,5 @@ class SummaryOperation(Operation):
             orderBy='startTime'
         ).execute()
         events = sorted(events_result.get('items', []), key=self._get_event_time)
-        for event in events:
-            print(self._get_event_string(event))
+        universal_print(sys.stdout, '\n'.join(self._get_event_string(e) for e in events) + '\n')
         return 0
