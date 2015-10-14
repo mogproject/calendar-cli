@@ -15,7 +15,7 @@ USAGE = """
 """
 
 
-DEFAULT_CREDENTIAL_PATH = os.path.join(os.path.expanduser('~'), '.credential', 'calendar-cli.json')
+DEFAULT_CREDENTIAL_PATH = os.path.join(os.path.expanduser('~'), '.credentials', 'calendar-cli.json')
 
 
 def _get_parser():

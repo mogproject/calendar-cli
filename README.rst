@@ -76,7 +76,7 @@ Getting Started
 
     calendar-cli setup client_secret.json
 
-The default path to the credentials file is ``~/.credential/calendar-cli.json``.
+The default path to the credentials file is ``~/.credentials/calendar-cli.json``.
 
 * Print the summary of today's events on the default calendar
 
