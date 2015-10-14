@@ -2,7 +2,7 @@
 calendar-cli
 ============
 
-Fetch and notify daily summary for Google Calendar
+Command-line Interface for Google Calendar
 
 .. image:: https://badge.fury.io/py/calendar-cli.svg
    :target: http://badge.fury.io/py/calendar-cli
@@ -28,8 +28,7 @@ Fetch and notify daily summary for Google Calendar
 Dependencies
 ------------
 
-* Python: 2.6 / 2.7 / 3.3 / 3.4
-* pyyaml
+* Python: 2.6 / 2.7
 * six
 * python-dateutil
 * pytz
@@ -59,18 +58,18 @@ Installation
 Getting Started
 ---------------
 
-* Download ``client_secret.json`` from Google Developers Console
+1. Download ``client_secret.json`` from Google Developers Console
+   
+* Open `Google Developers Console <https://console.developers.google.com/project>`_
+* Select or create a project
+* Open APIs & auth -> APIs -> Google Apps API -> Calendar API: Enable API
+* Open APIs & auth -> Credentials
 
-   * Open `Google Developers Console <https://console.developers.google.com/project>`_
-   * Select or create a project
-   * Open APIs & auth -> APIs -> Google Apps API -> Calendar API: Enable API
-   * Open APIs & auth -> Credentials
+  * OAuth consent screen: Set a product name and save
+  * Credentials: Add credentials -> OAuth 2.0 client ID -> Other: Set a name and create
+  * Download a credential file by clicking the ``Download JSON`` button, then rename it ``client_secret.json``
 
-      * OAuth consent screen: Set a product name and save
-      * Credentials: Add credentials -> OAuth 2.0 client ID -> Other: Set a name and create
-      * Download a credential file by clicking the ``Download JSON`` button, then rename it ``client_secret.json``
-
-* Create a credentials file
+2. Create a credentials file
 
 ::
 
@@ -78,7 +77,7 @@ Getting Started
 
 The default path to the credentials file is ``~/.credentials/calendar-cli.json``.
 
-* Print the summary of today's events on the default calendar
+3. Print the summary of today's events on the default calendar
 
 ::
 
