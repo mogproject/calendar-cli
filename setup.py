@@ -13,13 +13,12 @@ def get_version():
 setup(
     name='calendar-cli',
     version=get_version(),
-    description='Fetch and notify daily summary for Google Calendar',
+    description='Command-line Interface for Google Calendar',
     author='mogproject',
     author_email='mogproj@gmail.com',
     license='Apache 2.0 License',
     url='https://github.com/mogproject/calendar-cli',
     install_requires=[
-        'pyyaml',
         'six',
         'python-dateutil',
         'pytz',
