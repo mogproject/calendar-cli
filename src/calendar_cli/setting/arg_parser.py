@@ -9,9 +9,12 @@ USAGE = """
   %prog [options]
                         Print a summary of events on the calendar.
 
-  %prog setup <secret_path> [--credential <credential_path> --read-only]
+  %prog setup <secret_path> [--read-only --credential <credential_path>]
                         Generate a credentials file from the client secret.
                         You need a web browser to proceed.
+
+  %prog register [--date <YYYYMMDD> --start <HHMM> --end <HHMM>
+                  --credential <credential_path>] <summary>
 """
 
 
@@ -26,7 +29,7 @@ def _get_parser():
     )
     p.add_option(
         '--date', dest='date', default=None, type='string', metavar='YYYYMMDD',
-        help='set summary date to YYYYMMDD (default:today)'
+        help='set summary/register date to YYYYMMDD (default:today)'
     )
     p.add_option(
         '--credential', dest='credential', default=DEFAULT_CREDENTIAL_PATH, type='string', metavar='CREDENTIAL',

@@ -1,14 +1,8 @@
 from __future__ import division, print_function, absolute_import, unicode_literals
 
-import httplib2
-import pytz
-from apiclient import discovery
-import oauth2client
-
 from calendar_cli.operation.operation import Operation
+from calendar_cli.service import GoogleCalendarService
 from mog_commons.io import print_safe
-from mog_commons.functional import omap, oget, ozip
-from calendar_cli.i18n import *
 
 
 class SummaryOperation(Operation):
@@ -29,47 +23,9 @@ class SummaryOperation(Operation):
             ('credential_path', credential_path)
         )
 
-    def _get_service(self):
-        store = oauth2client.file.Storage(self.credential_path)
-        credentials = store.get()
-
-        assert credentials is not None and not credentials.invalid, '\n'.join([
-            'Failed to load credential file: %s' % self.credential_path,
-            'You need to create a credentials file by the following command:',
-            '',
-            '  calendar-cli setup client_secret.json',
-            ''
-        ])
-
-        http = credentials.authorize(httplib2.Http())
-        service = discovery.build('calendar', 'v3', http=http)
-        return service
-
-    @staticmethod
-    def _get_event_time(event):
-        return event['start'].get('dateTime'), event['end'].get('dateTime')
-
-    @staticmethod
-    def _extract_hour_minute(dt):
-        # extract only HH:MM if the start datetime is set
-        return dt[11:16]
-
-    def _get_event_string(self, event):
-        tm = omap('-'.join, ozip(*map(lambda x: omap(self._extract_hour_minute, x), self._get_event_time(event))))
-        creator = event['creator'].get('displayName', event['creator']['email'])
-        return '[%s] %s (%s)' % (oget(tm, MSG_ALL_DAY), event['summary'], creator)
-
     def run(self):
-        service = self._get_service()
-
-        limits = [self.start_time, self.start_time + self.duration]
-        start_time, end_time = [x.astimezone(pytz.utc).isoformat() for x in limits]
-
-        events_result = service.events().list(
-            calendarId=self.calendar_id, timeMin=start_time, timeMax=end_time, maxResults=100, singleEvents=True,
-            orderBy='startTime'
-        ).execute()
-        events = sorted(events_result.get('items', []), key=self._get_event_time)
+        service = GoogleCalendarService(self.credential_path)
+        events = service.list_events(self.calendar_id, self.start_time, self.start_time + self.duration)
         for e in events:
-            print_safe(self._get_event_string(e))
+            print_safe(e.str_time_summary())
         return 0

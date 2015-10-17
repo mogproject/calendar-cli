@@ -15,11 +15,6 @@ class Setting(CaseClass):
     def __init__(self, operation=None):
         CaseClass.__init__(self, ('operation', operation))
 
-    def copy(self, **args):
-        d = self.values()
-        d.update(args)
-        return Setting(**d)
-
     def parse_args(self, argv):
         option, args = arg_parser.parser.parse_args(argv[1:])
 

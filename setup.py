@@ -24,7 +24,7 @@ setup(
         'pytz',
         'google-api-python-client',
         'argparse',
-        'mog-commons',
+        'mog-commons >= 0.1.2',
     ],
     tests_require=[
         'unittest2',

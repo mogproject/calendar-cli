@@ -13,6 +13,6 @@ def __get_locale():
 __locale = __get_locale()
 
 if __locale.startswith('ja_'):
-    from messages_ja import *
+    from .messages_ja import *
 else:
-    from messages_en import *
+    from .messages_en import *

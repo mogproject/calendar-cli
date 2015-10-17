@@ -66,3 +66,4 @@ client_secret.json
 .idea/
 *.iml
 
+.python-version
