@@ -2,7 +2,7 @@ from __future__ import division, print_function, absolute_import, unicode_litera
 
 import sys
 from calendar_cli.setting.setting import Setting
-from calendar_cli.util import universal_print
+from mog_commons.io import print_safe
 
 
 def main():
@@ -12,8 +12,10 @@ def main():
 
     try:
         return_code = Setting().parse_args(sys.argv).operation.run()
+    except KeyboardInterrupt:
+        return_code = 3
     except Exception as e:
-        universal_print(sys.stdout, '%s: %s\n' % (e.__class__.__name__, e))
+        print_safe('%s: %s' % (e.__class__.__name__, e))
         # import traceback
         # print(traceback.print_exc())
         return_code = 2

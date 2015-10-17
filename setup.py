@@ -24,10 +24,10 @@ setup(
         'pytz',
         'google-api-python-client',
         'argparse',
+        'mog-commons',
     ],
     tests_require=[
         'unittest2',
-        'mock',
     ],
     package_dir={'': SRC_DIR},
     packages=find_packages(SRC_DIR),

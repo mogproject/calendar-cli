@@ -9,7 +9,7 @@ USAGE = """
   %prog [options]
                         Print a summary of events on the calendar.
 
-  %prog setup <secret_path> [--credential <credential_path>]
+  %prog setup <secret_path> [--credential <credential_path> --read-only]
                         Generate a credentials file from the client secret.
                         You need a web browser to proceed.
 """
@@ -31,6 +31,10 @@ def _get_parser():
     p.add_option(
         '--credential', dest='credential', default=DEFAULT_CREDENTIAL_PATH, type='string', metavar='CREDENTIAL',
         help='set credential path to CREDENTIAL (default:%s)' % DEFAULT_CREDENTIAL_PATH
+    )
+    p.add_option(
+        '--read-only', dest='read_only', action='store_true', default=False,
+        help='create a read-only credential file in the setup command (default: False)'
     )
     return p
 
