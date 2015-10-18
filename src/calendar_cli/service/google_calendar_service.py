@@ -30,11 +30,22 @@ class GoogleCalendarService(object):
         """
         :return: list[Event]: event list sorted by startTime and endTime (all-day events come first)
         """
-
-        time_min_str, time_max_str = [x.astimezone(pytz.utc).isoformat() for x in (time_min, time_max)]
-        events_result = self._service.events().list(
-            calendarId=calendar_id, timeMin=time_min_str, timeMax=time_max_str, maxResults=MAX_RESULTS,
-            singleEvents=True, orderBy='startTime'
-        ).execute()
-
+        params = {
+            'calendarId': calendar_id,
+            'timeMin': time_min.astimezone(pytz.utc).isoformat(),
+            'timeMax': time_max.astimezone(pytz.utc).isoformat(),
+            'maxResults': MAX_RESULTS,
+            'singleEvents': True,
+            'orderBy': 'startTime'
+        }
+        events_result = self._service.events().list(**params).execute()
         return sorted(Event.parse_dict(d, events_result['timeZone']) for d in events_result.get('items', []))
+
+    def insert_event(self, calendar_id, event):
+        """
+        :param calendar_id: string:
+        :param event: Event:
+        :return: string: event id
+        """
+        ret = self._service.events().insert(calendarId=calendar_id, body=event.to_dict()).execute()
+        return ret['id']

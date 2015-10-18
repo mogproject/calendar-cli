@@ -16,10 +16,10 @@ class EventTime(CaseClass):
         assert datetime_tz.tzinfo is not None, 'datetime_tz must be timezone-aware'
         CaseClass.__init__(self, ('has_time', has_time), ('datetime_tz', datetime_tz))
 
-    def str_time(self):
+    def to_short_summary(self):
         return self.datetime_tz.strftime('%H:%M') if self.has_time else None
 
-    def str_date(self):
+    def to_long_summary(self):
         return self.datetime_tz.strftime('%Y-%m-%d ') + MSG_WEEK_DAY[self.datetime_tz.weekday()]
 
     def to_dict(self):
@@ -72,12 +72,13 @@ class Event(CaseClass):
                            )
 
     def str_time_range(self):
-        return oget(omap('-'.join, ozip(self.start_time.str_time(), self.end_time.str_time())), MSG_ALL_DAY)
+        s = ozip(self.start_time.to_short_summary(), self.end_time.to_short_summary())
+        return oget(omap('-'.join, s), MSG_ALL_DAY)
 
     def str_creator(self):
         return omap(lambda s: '%s' % s, oget(self.creator_name, self.creator_email))
 
-    def str_time_summary(self):
+    def to_short_summary(self):
         """
         :return: e.g. '[ALLDAY] Google I/O 2015 (Foo Bar)'
                       '[10:30-11:00] Stand-up meeting (foo@example.com)'
@@ -88,12 +89,12 @@ class Event(CaseClass):
             oget(omap(lambda s: ' (%s)' % s, self.str_creator()), '')
         )
 
-    def str_date_summary(self):
+    def to_long_summary(self):
         """
         :return: e.g. '2015-05-28 Wed [ALLDAY] Google I/O 2015'
                       '2015-05-28 Wed [10:30-11:00] Stand-up meeting
         """
-        return '%s [%s] %s' % (self.start_time.str_date(), self.str_time_range(), self.summary)
+        return '%s [%s] %s' % (self.start_time.to_long_summary(), self.str_time_range(), self.summary)
 
     def to_dict(self):
         r = {'summary': self.summary, 'start': self.start_time.to_dict(), 'end': self.end_time.to_dict()}

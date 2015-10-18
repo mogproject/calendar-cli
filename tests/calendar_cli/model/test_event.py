@@ -38,17 +38,17 @@ class TestEventTime(unittest.TestCase):
         ts = ts1 + ts2
         self.assertEqual(sorted(ts), [ts[0], ts[2], ts[1], ts[3], ts[6], ts[4], ts[7], ts[5]])
 
-    def test_str_time(self):
-        self.assertEqual(EventTime(False, self.d0).str_time(), None)
-        self.assertEqual(EventTime(False, self.d2).str_time(), None)
-        self.assertEqual(EventTime(True, self.d4).str_time(), '12:34')
-        self.assertEqual(EventTime(True, self.d6).str_time(), '03:34')
+    def test_to_short_summary(self):
+        self.assertEqual(EventTime(False, self.d0).to_short_summary(), None)
+        self.assertEqual(EventTime(False, self.d2).to_short_summary(), None)
+        self.assertEqual(EventTime(True, self.d4).to_short_summary(), '12:34')
+        self.assertEqual(EventTime(True, self.d6).to_short_summary(), '03:34')
 
-    def test_str_date(self):
-        self.assertEqual(EventTime(False, self.d0).str_date(), '2015-10-17 %s' % MSG_WEEK_DAY[5])
-        self.assertEqual(EventTime(False, self.d2).str_date(), '2015-10-17 %s' % MSG_WEEK_DAY[5])
-        self.assertEqual(EventTime(True, self.d4).str_date(), '2015-10-17 %s' % MSG_WEEK_DAY[5])
-        self.assertEqual(EventTime(True, self.d6).str_date(), '2015-10-17 %s' % MSG_WEEK_DAY[5])
+    def test_to_long_summary(self):
+        self.assertEqual(EventTime(False, self.d0).to_long_summary(), '2015-10-17 %s' % MSG_WEEK_DAY[5])
+        self.assertEqual(EventTime(False, self.d2).to_long_summary(), '2015-10-17 %s' % MSG_WEEK_DAY[5])
+        self.assertEqual(EventTime(True, self.d4).to_long_summary(), '2015-10-17 %s' % MSG_WEEK_DAY[5])
+        self.assertEqual(EventTime(True, self.d6).to_long_summary(), '2015-10-17 %s' % MSG_WEEK_DAY[5])
 
     def test_to_dict(self):
         self.assertEqual(EventTime(False, self.d0).to_dict(),
@@ -111,15 +111,15 @@ class TestEvent(unittest.TestCase):
     def test_init_error(self):
         """todo"""
 
-    def test_str_time_summary(self):
-        self.assertEqual(self.e0.str_time_summary(), '[09:00-17:00] Google I/O 2015 (Foo Bar)')
-        self.assertEqual(self.e1.str_time_summary(), '[%s] あいうえお' % MSG_ALL_DAY)
-        self.assertEqual(self.e2.str_time_summary(), '[%s] あいうえお (foo@example.com)' % MSG_ALL_DAY)
+    def test_to_short_summary(self):
+        self.assertEqual(self.e0.to_short_summary(), '[09:00-17:00] Google I/O 2015 (Foo Bar)')
+        self.assertEqual(self.e1.to_short_summary(), '[%s] あいうえお' % MSG_ALL_DAY)
+        self.assertEqual(self.e2.to_short_summary(), '[%s] あいうえお (foo@example.com)' % MSG_ALL_DAY)
 
-    def test_str_date_summary(self):
-        self.assertEqual(self.e0.str_date_summary(), '2015-05-28 %s [09:00-17:00] Google I/O 2015' % MSG_WEEK_DAY[3])
-        self.assertEqual(self.e1.str_date_summary(), '2015-10-17 %s [%s] あいうえお' % (MSG_WEEK_DAY[5], MSG_ALL_DAY))
-        self.assertEqual(self.e2.str_date_summary(), '2015-10-17 %s [%s] あいうえお' % (MSG_WEEK_DAY[5], MSG_ALL_DAY))
+    def test_to_long_summary(self):
+        self.assertEqual(self.e0.to_long_summary(), '2015-05-28 %s [09:00-17:00] Google I/O 2015' % MSG_WEEK_DAY[3])
+        self.assertEqual(self.e1.to_long_summary(), '2015-10-17 %s [%s] あいうえお' % (MSG_WEEK_DAY[5], MSG_ALL_DAY))
+        self.assertEqual(self.e2.to_long_summary(), '2015-10-17 %s [%s] あいうえお' % (MSG_WEEK_DAY[5], MSG_ALL_DAY))
 
     def test_to_dict(self):
         self.assertEqual(self.e0.to_dict(), {

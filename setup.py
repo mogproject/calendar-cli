@@ -22,9 +22,10 @@ setup(
         'six',
         'python-dateutil',
         'pytz',
+        'tzlocal',
         'google-api-python-client',
         'argparse',
-        'mog-commons >= 0.1.2',
+        'mog-commons >= 0.1.3',
     ],
     tests_require=[
         'unittest2',

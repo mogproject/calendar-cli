@@ -32,6 +32,7 @@ Dependencies
 * six
 * python-dateutil
 * pytz
+* tzlocal
 * google-api-python-client
 * argparse
 * `mog-commons <https://github.com/mogproject/mog-commons-python>`_
