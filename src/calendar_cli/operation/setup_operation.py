@@ -1,14 +1,14 @@
 from __future__ import division, print_function, absolute_import, unicode_literals
 
-import sys
 import os
 import argparse
 import oauth2client
 from calendar_cli.operation.operation import Operation
-from calendar_cli.util import universal_print
+from mog_commons.io import print_safe
 
 
-SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
+SCOPE_READ_WRITE = 'https://www.googleapis.com/auth/calendar'
+SCOPE_READ_ONLY = 'https://www.googleapis.com/auth/calendar.readonly'
 
 
 class SetupOperation(Operation):
@@ -16,13 +16,17 @@ class SetupOperation(Operation):
     Create the credentials file from a client secret file.
     """
 
-    def __init__(self, secret_path, credential_path):
-        Operation.__init__(self, ('secret_path', secret_path), ('credential_path', credential_path))
+    def __init__(self, secret_path, credential_path, read_only):
+        Operation.__init__(self,
+                           ('secret_path', secret_path),
+                           ('credential_path', credential_path),
+                           ('read_only', read_only))
 
     def run(self):
         assert not os.path.exists(self.credential_path), 'Credential file already exists: %s' % self.credential_path
 
-        flow = oauth2client.client.flow_from_clientsecrets(self.secret_path, SCOPES)
+        scopes = [SCOPE_READ_ONLY if self.read_only else SCOPE_READ_WRITE]
+        flow = oauth2client.client.flow_from_clientsecrets(self.secret_path, scopes)
         store = oauth2client.file.Storage(self.credential_path)
         flags = argparse.ArgumentParser(parents=[oauth2client.tools.argparser]).parse_args('')
 
@@ -32,5 +36,5 @@ class SetupOperation(Operation):
         credentials = oauth2client.tools.run_flow(flow, store, flags)
         assert credentials is not None and not credentials.invalid, 'Failed to create credential file.'
 
-        universal_print(sys.stdout, 'Saved credential file: %s\n' % self.credential_path)
+        print_safe('Saved credential file: %s' % self.credential_path)
         return 0

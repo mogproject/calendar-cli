@@ -1,40 +1,142 @@
 from __future__ import division, print_function, absolute_import, unicode_literals
 
-from datetime import date, datetime, timedelta
-from dateutil.tz import tzlocal
-from calendar_cli.operation import HelpOperation, SetupOperation, SummaryOperation
+import re
+from datetime import datetime, timedelta
+from tzlocal import get_localzone
+from calendar_cli.model import EventTime, Event
+from calendar_cli.operation import *
 from calendar_cli.setting import arg_parser
-from calendar_cli.util import CaseClass
+from mog_commons.case_class import CaseClass
+from mog_commons.functional import oget
+from mog_commons.string import to_unicode
 
 
 class Setting(CaseClass):
     """Manages all settings."""
 
-    DEFAULT_DURATION = timedelta(days=1)
+    DEFAULT_SUMMARY_DURATION = timedelta(days=1)
+    DEFAULT_CREATE_DURATION = timedelta(minutes=15)
 
-    def __init__(self, operation=None):
-        CaseClass.__init__(self, ('operation', operation))
+    def __init__(self, operation=None, now=None, debug=None):
+        CaseClass.__init__(self,
+                           ('operation', operation),
+                           ('now', now or get_localzone().localize(datetime.now())),
+                           ('debug', debug)
+                           )
 
-    def copy(self, **args):
-        d = self.values()
-        d.update(args)
-        return Setting(**d)
+    @staticmethod
+    def _parse_date(s, now):
+        if s is None:
+            return None
+        try:
+            # YYYYmmdd
+            if re.compile(r"""^[0-9]{8}$""").match(s):
+                return datetime.strptime(s, '%Y%m%d').date()
+
+            # mm/dd or mm-dd (complete with the current year)
+            m = re.compile(r"""^([0-9]{1,2})[/-]([0-9]{1,2})$""").match(s)
+            if m:
+                mm, dd = m.group(1), m.group(2)
+                return datetime.strptime(mm.rjust(2, '0') + dd.rjust(2, '0'), '%m%d').date().replace(year=now.year)
+
+            # YYYY/MM/DD or YYYY-MM-DD
+            m = re.compile(r"""^([0-9]{4})[/-]([0-9]{1,2})[/-]([0-9]{1,2})$""").match(s)
+            if m:
+                yyyy, mm, dd = m.group(1), m.group(2), m.group(3)
+                return datetime.strptime(yyyy + mm.rjust(2, '0') + dd.rjust(2, '0'), '%Y%m%d').date()
+
+            # MM/DD/YYYY or MM-DD-YYYY
+            m = re.compile(r"""^([0-9]{1,2})[/-]([0-9]{1,2})[/-]([0-9]{4})$""").match(s)
+            if m:
+                mm, dd, yyyy = m.group(1), m.group(2), m.group(3)
+                return datetime.strptime(yyyy + mm.rjust(2, '0') + dd.rjust(2, '0'), '%Y%m%d').date()
+
+            raise ValueError()
+        except ValueError:
+            raise ValueError('Failed to parse --date option: %s' % s)
+
+    @staticmethod
+    def _parse_time(s):
+        if s is None:
+            return None
+        try:
+            # HHMM
+            if re.compile(r"""^[0-9]{4}$""").match(s):
+                return datetime.strptime(s, '%H%M').time()
+
+            # HH:MM
+            m = re.compile(r"""^([0-9]{1,2}):([0-9]{1,2})$""").match(s)
+            if m:
+                hh, mm = m.group(1), m.group(2)
+                return datetime.strptime(hh.rjust(2, '0') + mm.rjust(2, '0'), '%H%M').time()
+
+            raise ValueError()
+        except ValueError:
+            raise ValueError('Failed to parse --start or --end option: %s' % s)
+
+    @classmethod
+    def _parse_time_range(cls, date, start_time, end_time, now):
+        parsed_date = cls._parse_date(date, now)
+        parsed_start = cls._parse_time(start_time)
+        parsed_end = cls._parse_time(end_time)
+
+        if parsed_date is None:
+            if parsed_start is None:
+                raise ValueError('Failed to create event: --date or --start options are missing.')
+            # set date today or tomorrow
+            dt = now.date()
+            if (parsed_start.hour, parsed_start.minute) < (now.hour, now.minute):
+                dt += timedelta(days=1)
+        else:
+            if parsed_start is None:
+                if parsed_end is not None:
+                    raise ValueError('Failed to create event: --date option with --end is set but --start is missing.')
+                # all-day event
+                t = get_localzone().localize(datetime(parsed_date.year, parsed_date.month, parsed_date.day))
+                return EventTime(False, t), EventTime(False, t)
+            dt = parsed_date
+
+        # set start and end event time
+        start = get_localzone().localize(datetime.combine(dt, parsed_start))
+
+        if parsed_end is None:
+            end = start + cls.DEFAULT_CREATE_DURATION
+        else:
+            end = get_localzone().localize(datetime.combine(dt, parsed_end))
+            if parsed_start > parsed_end:
+                end += timedelta(days=1)
+        return EventTime(True, start), EventTime(True, end)
 
     def parse_args(self, argv):
-        option, args = arg_parser.parser.parse_args(argv[1:])
+        assert self.now is not None
 
-        if not args:
-            # summary
-            calendar_id = option.calendar
-            dt = date.today() if option.date is None else datetime.strptime(option.date, '%Y%m%d').date()
-            start_time = datetime(dt.year, dt.month, dt.day, tzinfo=tzlocal())
+        # decode all args as utf-8
+        option, args = arg_parser.parser.parse_args([to_unicode(a, errors='ignore') for a in argv[1:]])
 
-            operation = SummaryOperation(calendar_id, start_time, Setting.DEFAULT_DURATION, option.credential)
-        elif args[0] == 'setup' and len(args) == 2:
-            # setup
-            operation = SetupOperation(args[1], option.credential)
-        else:
-            # help
-            operation = HelpOperation()
+        try:
+            if not args:
+                # summary
+                dt = oget(self._parse_date(option.date, self.now), self.now.date())
+                start_time = get_localzone().localize(datetime(dt.year, dt.month, dt.day))
+                operation = SummaryOperation(option.calendar, start_time, Setting.DEFAULT_SUMMARY_DURATION,
+                                             option.credential)
+            elif args[0] == 'setup' and len(args) == 2:
+                # setup
+                operation = SetupOperation(args[1], option.credential, option.read_only)
+            elif args[0] == 'create' and len(args) >= 2:
+                # create
+                summary = ' '.join(args[1:])
+                start, end = self._parse_time_range(option.date, option.start_time, option.end_time, self.now)
+                operation = CreateOperation(option.calendar, Event(start, end, summary), option.credential)
+            else:
+                # help
+                operation = HelpOperation()
+        except Exception as e:
+            # parse error
+            operation = HelpOperation(e)
+            if option.debug:
+                import traceback
+                traceback.print_exc()
+                print()
 
-        return Setting(operation)
+        return self.copy(operation=operation, debug=option.debug)

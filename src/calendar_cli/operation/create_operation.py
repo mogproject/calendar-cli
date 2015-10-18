@@ -2,32 +2,27 @@ from __future__ import division, print_function, absolute_import, unicode_litera
 
 from calendar_cli.operation.operation import Operation
 from calendar_cli.service import GoogleCalendarService
+from calendar_cli.i18n import MSG_EVENT_CREATED
 from mog_commons.io import print_safe
 
 
-class SummaryOperation(Operation):
-    """Print summary of Google Calender"""
+class CreateOperation(Operation):
+    """Create an event to Google Calendar"""
 
-    def __init__(self, calendar_id, start_time, duration, credential_path):
+    def __init__(self, calendar_id, event, credential_path):
         """
         :param calendar_id: string: calendar id
-        :param start_time: datetime in tzinfo-aware
-        :param duration: timedelta
+        :param event: calendar_cli.model.Event: event data to create
         :param credential_path: string: path to the credential file
         """
-        assert start_time.tzinfo is not None, 'start_time must be tzinfo-aware'
-
         Operation.__init__(
             self,
             ('calendar_id', calendar_id),
-            ('start_time', start_time),
-            ('duration', duration),
+            ('event', event),
             ('credential_path', credential_path)
         )
 
     def run(self):
         service = GoogleCalendarService(self.credential_path)
-        events = service.list_events(self.calendar_id, self.start_time, self.start_time + self.duration)
-        for e in events:
-            print_safe(e.to_short_summary())
-        return 0
+        service.insert_event(self.calendar_id, self.event)
+        print_safe(MSG_EVENT_CREATED % {'event': self.event.to_long_summary()})

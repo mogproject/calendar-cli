@@ -9,9 +9,13 @@ USAGE = """
   %prog [options]
                         Print a summary of events on the calendar.
 
-  %prog setup <secret_path> [--credential <credential_path>]
+  %prog setup <secret_path> [--read-only --credential <credential_path>]
                         Generate a credentials file from the client secret.
                         You need a web browser to proceed.
+
+  %prog create [--date <YYYYMMDD> --start <HHMM> --end <HHMM>
+                       --credential <credential_path>] <summary>
+                        Create an event onto the calendar.
 """
 
 
@@ -26,11 +30,27 @@ def _get_parser():
     )
     p.add_option(
         '--date', dest='date', default=None, type='string', metavar='YYYYMMDD',
-        help='set summary date to YYYYMMDD (default:today)'
+        help='set date to YYYYMMDD in the setup/create command (default:today)'
     )
     p.add_option(
         '--credential', dest='credential', default=DEFAULT_CREDENTIAL_PATH, type='string', metavar='CREDENTIAL',
         help='set credential path to CREDENTIAL (default:%s)' % DEFAULT_CREDENTIAL_PATH
+    )
+    p.add_option(
+        '--read-only', dest='read_only', action='store_true', default=False,
+        help='create a read-only credential file in the setup command (default: False)'
+    )
+    p.add_option(
+        '--start', dest='start_time', default=None, type='string', metavar='HHMM',
+        help='set start time in the create command'
+    )
+    p.add_option(
+        '--end', dest='end_time', default=None, type='string', metavar='HHMM',
+        help='set end time in the create command'
+    )
+    p.add_option(
+        '--debug', dest='debug', action='store_true', default=False,
+        help='enable debug logging (default: False)'
     )
     return p
 
