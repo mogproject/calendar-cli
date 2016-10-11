@@ -63,10 +63,9 @@ Getting Started
 
 1. Download ``client_secret.json`` from Google Developers Console
    
-* Open `Google Developers Console <https://console.developers.google.com/project>`_
+* Open `Google API Manager<https://console.developers.google.com/apis/credentials>`_
 * Select or create a project
-* Open APIs & auth -> APIs -> Google Apps API -> Calendar API: Enable API
-* Open APIs & auth -> Credentials
+* Open API Manager -> Credentials
 
   * OAuth consent screen: Set a product name and save
   * Credentials: Add credentials -> OAuth 2.0 client ID -> Other: Set a name and create

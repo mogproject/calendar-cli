@@ -2,7 +2,7 @@ from __future__ import division, print_function, absolute_import, unicode_litera
 
 import os
 import argparse
-import oauth2client
+import oauth2client.tools
 from calendar_cli.operation.operation import Operation
 from mog_commons.io import print_safe
 

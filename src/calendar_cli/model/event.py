@@ -50,13 +50,15 @@ class Event(CaseClass):
                  end_time,
                  summary,
                  creator_name=None,
-                 creator_email=None):
+                 creator_email=None,
+                 location=None):
         """
         :param start_datetime: EventTime:
         :param end_datetime: EventTime:
         :param summary: unicode:
         :param creator_name: unicode:
         :param creator_email: unicode:
+        :param location: unicode:
         """
         assert isinstance(start_time, EventTime)
         assert isinstance(end_time, EventTime)
@@ -68,7 +70,8 @@ class Event(CaseClass):
                            ('end_time', end_time),
                            ('summary', summary),
                            ('creator_name', creator_name),
-                           ('creator_email', creator_email)
+                           ('creator_email', creator_email),
+                           ('location', location)
                            )
 
     def str_time_range(self):
@@ -78,23 +81,22 @@ class Event(CaseClass):
     def str_creator(self):
         return omap(lambda s: '%s' % s, oget(self.creator_name, self.creator_email))
 
-    def to_short_summary(self):
-        """
-        :return: e.g. '[ALLDAY] Google I/O 2015 (Foo Bar)'
-                      '[10:30-11:00] Stand-up meeting (foo@example.com)'
-        """
-        return '[%s] %s%s' % (
-            self.str_time_range(),
-            self.summary,
-            oget(omap(lambda s: ' (%s)' % s, self.str_creator()), '')
-        )
-
     def to_long_summary(self):
         """
         :return: e.g. '2015-05-28 Wed [ALLDAY] Google I/O 2015'
                       '2015-05-28 Wed [10:30-11:00] Stand-up meeting
         """
-        return '%s [%s] %s' % (self.start_time.to_long_summary(), self.str_time_range(), self.summary)
+        return self.to_format('%D [%T] %S')
+
+    def to_format(self, format_):
+        return (
+            format_
+            .replace('%D', self.start_time.to_long_summary())
+            .replace('%T', self.str_time_range())
+            .replace('%S', self.summary)
+            .replace('%C', oget(omap(lambda s: ' (%s)' % s, self.str_creator()), ''))
+            .replace('%L', oget(omap(lambda s: ' @%s' % s, self.location), ''))
+        )
 
     def to_dict(self):
         r = {'summary': self.summary, 'start': self.start_time.to_dict(), 'end': self.end_time.to_dict()}
@@ -104,6 +106,8 @@ class Event(CaseClass):
         omap(lambda x: d.update({'email': x}), self.creator_email)
         if d:
             r.update({'creator': d})
+
+        omap(lambda x: r.update({'location': x}), self.location)
         return r
 
     @staticmethod
@@ -112,4 +116,5 @@ class Event(CaseClass):
                      EventTime.parse_dict(d['end'], default_timezone),
                      d['summary'],
                      omap(lambda x: x.get('displayName'), (d.get('creator'))),
-                     omap(lambda x: x.get('email'), (d.get('creator'))))
+                     omap(lambda x: x.get('email'), (d.get('creator'))),
+                     d.get('location'))

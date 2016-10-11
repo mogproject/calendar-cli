@@ -13,13 +13,14 @@ USAGE = """
                         Generate a credentials file from the client secret.
                         You need a web browser to proceed.
 
-  %prog create [--date <YYYYMMDD> --start <HHMM> --end <HHMM>
-                       --credential <credential_path>] <summary>
+  %prog create [--date <YYYYMMDD> --start <HHMM> --end <HHMM> --location <location>
+                --credential <credential_path>] <summary>
                         Create an event onto the calendar.
 """
 
 
 DEFAULT_CREDENTIAL_PATH = os.path.join(os.path.expanduser('~'), '.credentials', 'calendar-cli.json')
+DEFAULT_FORMAT = '[%T] %S%L%C'
 
 
 def _get_parser():
@@ -30,7 +31,7 @@ def _get_parser():
     )
     p.add_option(
         '--date', dest='date', default=None, type='string', metavar='YYYYMMDD',
-        help='set date to YYYYMMDD in the setup/create command (default:today)'
+        help='set date to YYYYMMDD in the summary/create command (default:today)'
     )
     p.add_option(
         '--credential', dest='credential', default=DEFAULT_CREDENTIAL_PATH, type='string', metavar='CREDENTIAL',
@@ -47,6 +48,22 @@ def _get_parser():
     p.add_option(
         '--end', dest='end_time', default=None, type='string', metavar='HHMM',
         help='set end time in the create command'
+    )
+    p.add_option(
+        '--location', dest='location', default=None, type='string', metavar='LOCATION',
+        help='set location to LOCATION in the create command'
+    )
+    p.add_option(
+        '--format', dest='format', default=DEFAULT_FORMAT, type='string', metavar='FORMAT',
+        help=' '.join([
+            'set format to FORMAT in the summary command (default: "%s")' % DEFAULT_FORMAT,
+            'The following symbols will be replaced.',
+            '"%D" -> date,',
+            '"%T" -> time,',
+            '"%S" -> summary,',
+            '"%C" -> creator,',
+            '"%L" -> location',
+        ])
     )
     p.add_option(
         '--debug', dest='debug', action='store_true', default=False,

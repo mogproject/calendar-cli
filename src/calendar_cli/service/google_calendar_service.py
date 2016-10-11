@@ -3,7 +3,7 @@ from __future__ import division, print_function, absolute_import, unicode_litera
 import pytz
 import httplib2
 from apiclient import discovery
-import oauth2client
+import oauth2client.file
 from calendar_cli.model import Event
 
 MAX_RESULTS = 100
@@ -15,7 +15,7 @@ class GoogleCalendarService(object):
         credentials = store.get()
 
         assert credentials is not None and not credentials.invalid, '\n'.join([
-            'Failed to load credential file: %s' % self.credential_path,
+            'Failed to load credential file: %s' % credential_path,
             'You need to create a credentials file by the following command:',
             '',
             '  calendar-cli setup client_secret.json',

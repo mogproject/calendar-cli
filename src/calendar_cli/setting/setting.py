@@ -119,7 +119,7 @@ class Setting(CaseClass):
                 dt = oget(self._parse_date(option.date, self.now), self.now.date())
                 start_time = get_localzone().localize(datetime(dt.year, dt.month, dt.day))
                 operation = SummaryOperation(option.calendar, start_time, Setting.DEFAULT_SUMMARY_DURATION,
-                                             option.credential)
+                                             option.credential, option.format)
             elif args[0] == 'setup' and len(args) == 2:
                 # setup
                 operation = SetupOperation(args[1], option.credential, option.read_only)
@@ -127,7 +127,8 @@ class Setting(CaseClass):
                 # create
                 summary = ' '.join(args[1:])
                 start, end = self._parse_time_range(option.date, option.start_time, option.end_time, self.now)
-                operation = CreateOperation(option.calendar, Event(start, end, summary), option.credential)
+                ev = Event(start, end, summary, location=option.location)
+                operation = CreateOperation(option.calendar, ev, option.credential)
             else:
                 # help
                 operation = HelpOperation()
