@@ -94,6 +94,7 @@ class TestEvent(unittest.TestCase):
     e0 = Event(t0, t1, 'Google I/O 2015', 'Foo Bar', 'foo@example.com')
     e1 = Event(t2, t3, 'あいうえお', None, None)
     e2 = Event(t2, t3, 'あいうえお', None, 'foo@example.com')
+    e3 = Event(t0, t1, 'Google I/O 2016', 'Foo Bar', 'foo@example.com', 'Mountain View')
 
     def test_init(self):
         self.assertEqual(self.e0.start_time, self.t0)
@@ -111,10 +112,11 @@ class TestEvent(unittest.TestCase):
     def test_init_error(self):
         """todo"""
 
-    def test_to_short_summary(self):
-        self.assertEqual(self.e0.to_short_summary(), '[09:00-17:00] Google I/O 2015 (Foo Bar)')
-        self.assertEqual(self.e1.to_short_summary(), '[%s] あいうえお' % MSG_ALL_DAY)
-        self.assertEqual(self.e2.to_short_summary(), '[%s] あいうえお (foo@example.com)' % MSG_ALL_DAY)
+    def test_to_format(self):
+        self.assertEqual(self.e0.to_format('[%T] %S%L%C'), '[09:00-17:00] Google I/O 2015 (Foo Bar)')
+        self.assertEqual(self.e1.to_format('[%T] %S%L%C'), '[%s] あいうえお' % MSG_ALL_DAY)
+        self.assertEqual(self.e2.to_format('[%T] %S%L%C'), '[%s] あいうえお (foo@example.com)' % MSG_ALL_DAY)
+        self.assertEqual(self.e3.to_format('[%T] %S%L%C'), '[09:00-17:00] Google I/O 2016 @Mountain View (Foo Bar)')
 
     def test_to_long_summary(self):
         self.assertEqual(self.e0.to_long_summary(), '2015-05-28 %s [09:00-17:00] Google I/O 2015' % MSG_WEEK_DAY[3])
