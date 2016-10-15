@@ -21,6 +21,7 @@ USAGE = """
 
 DEFAULT_CREDENTIAL_PATH = os.path.join(os.path.expanduser('~'), '.credentials', 'calendar-cli.json')
 DEFAULT_FORMAT = '[%T] %S%L%C'
+DEFAULT_FORMAT_DAYS = '%D [%T] %S%L%C'
 
 
 def _get_parser():
@@ -32,6 +33,13 @@ def _get_parser():
     p.add_option(
         '--date', dest='date', default=None, type='string', metavar='YYYYMMDD',
         help='set date to YYYYMMDD in the summary/create command (default:today)'
+    )
+    p.add_option(
+        '--days', dest='days', default=0, type=int, metavar='N',
+        help=' '.join([
+            'show events from the next N days in the summary command (default:0)',
+            'If you set a negative number(-N), events from past N days will be shown.'
+        ])
     )
     p.add_option(
         '--credential', dest='credential', default=DEFAULT_CREDENTIAL_PATH, type='string', metavar='CREDENTIAL',
@@ -54,7 +62,7 @@ def _get_parser():
         help='set location to LOCATION in the create command'
     )
     p.add_option(
-        '--format', dest='format', default=DEFAULT_FORMAT, type='string', metavar='FORMAT',
+        '--format', dest='format', default=None, type='string', metavar='FORMAT',
         help=' '.join([
             'set format to FORMAT in the summary command (default: "%s")' % DEFAULT_FORMAT,
             'The following symbols will be replaced.',

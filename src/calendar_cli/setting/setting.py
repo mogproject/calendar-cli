@@ -14,7 +14,6 @@ from mog_commons.string import to_unicode
 class Setting(CaseClass):
     """Manages all settings."""
 
-    DEFAULT_SUMMARY_DURATION = timedelta(days=1)
     DEFAULT_CREATE_DURATION = timedelta(minutes=15)
 
     def __init__(self, operation=None, now=None, debug=None):
@@ -118,8 +117,22 @@ class Setting(CaseClass):
                 # summary
                 dt = oget(self._parse_date(option.date, self.now), self.now.date())
                 start_time = get_localzone().localize(datetime(dt.year, dt.month, dt.day))
-                operation = SummaryOperation(option.calendar, start_time, Setting.DEFAULT_SUMMARY_DURATION,
-                                             option.credential, option.format)
+
+                fmt = (option.format or
+                       (arg_parser.DEFAULT_FORMAT if option.days == 0 else arg_parser.DEFAULT_FORMAT_DAYS))
+
+                if option.days == 0:
+                    # show events on one day
+                    duration = timedelta(days=1)
+                elif option.days < 0:
+                    # show events from past several days
+                    duration = timedelta(days=-option.days + 1)
+                    start_time -= timedelta(days=-option.days)
+                else:
+                    # show events from several days from today
+                    duration = timedelta(days=option.days + 1)
+
+                operation = SummaryOperation(option.calendar, start_time, duration, option.credential, fmt)
             elif args[0] == 'setup' and len(args) == 2:
                 # setup
                 operation = SetupOperation(args[1], option.credential, option.read_only)
