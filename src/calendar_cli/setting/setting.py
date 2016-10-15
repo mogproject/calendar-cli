@@ -135,7 +135,7 @@ class Setting(CaseClass):
                 operation = SummaryOperation(option.calendar, start_time, duration, option.credential, fmt)
             elif args[0] == 'setup' and len(args) == 2:
                 # setup
-                operation = SetupOperation(args[1], option.credential, option.read_only)
+                operation = SetupOperation(args[1], option.credential, option.read_only, option.no_browser)
             elif args[0] == 'create' and len(args) >= 2:
                 # create
                 summary = ' '.join(args[1:])

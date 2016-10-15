@@ -9,9 +9,8 @@ USAGE = """
   %prog [options]
                         Print a summary of events on the calendar.
 
-  %prog setup <secret_path> [--read-only --credential <credential_path>]
+  %prog setup <secret_path> [--read-only --no-browser --credential <credential_path>]
                         Generate a credentials file from the client secret.
-                        You need a web browser to proceed.
 
   %prog create [--date <YYYYMMDD> --start <HHMM> --end <HHMM> --location <location>
                 --credential <credential_path>] <summary>
@@ -48,6 +47,10 @@ def _get_parser():
     p.add_option(
         '--read-only', dest='read_only', action='store_true', default=False,
         help='create a read-only credential file in the setup command (default: False)'
+    )
+    p.add_option(
+        '--no-browser', dest='no_browser', action='store_true', default=False,
+        help='create a credential file without launching a web browser in the setup command (default: False)'
     )
     p.add_option(
         '--start', dest='start_time', default=None, type='string', metavar='HHMM',

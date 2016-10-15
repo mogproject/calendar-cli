@@ -106,6 +106,23 @@ class TestSetting(unittest.TestCase):
         self.assertEqual(s.operation.duration, timedelta(days=4))
         self.assertEqual(s.operation.format, '%S')
 
+        # setup
+        a = ['calendar-cli', 'setup', 'client_secret.json']
+        s = Setting().parse_args(a)
+
+        self.assertIsInstance(s.operation, SetupOperation)
+        self.assertEqual(s.operation.secret_path, 'client_secret.json')
+        self.assertEqual(s.operation.read_only, False)
+        self.assertEqual(s.operation.no_browser, False)
+
+        a = ['calendar-cli', 'setup', 'client_secret.json', '--read-only', '--no-browser']
+        s = Setting().parse_args(a)
+
+        self.assertIsInstance(s.operation, SetupOperation)
+        self.assertEqual(s.operation.secret_path, 'client_secret.json')
+        self.assertEqual(s.operation.read_only, True)
+        self.assertEqual(s.operation.no_browser, True)
+
     def test_parse_time_range(self):
         now = self._localize(2015, 10, 19, 9, 30)
 
