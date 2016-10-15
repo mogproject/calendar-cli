@@ -16,11 +16,12 @@ class SetupOperation(Operation):
     Create the credentials file from a client secret file.
     """
 
-    def __init__(self, secret_path, credential_path, read_only):
+    def __init__(self, secret_path, credential_path, read_only, no_browser):
         Operation.__init__(self,
                            ('secret_path', secret_path),
                            ('credential_path', credential_path),
-                           ('read_only', read_only))
+                           ('read_only', read_only),
+                           ('no_browser', no_browser))
 
     def run(self):
         assert not os.path.exists(self.credential_path), 'Credential file already exists: %s' % self.credential_path
@@ -28,7 +29,8 @@ class SetupOperation(Operation):
         scopes = [SCOPE_READ_ONLY if self.read_only else SCOPE_READ_WRITE]
         flow = oauth2client.client.flow_from_clientsecrets(self.secret_path, scopes)
         store = oauth2client.file.Storage(self.credential_path)
-        flags = argparse.ArgumentParser(parents=[oauth2client.tools.argparser]).parse_args('')
+        args = ['--noauth_local_webserver'] if self.no_browser else []
+        flags = argparse.ArgumentParser(parents=[oauth2client.tools.argparser]).parse_args(args)
 
         parent_dir = os.path.dirname(self.credential_path)
         if not os.path.exists(parent_dir):
