@@ -2,7 +2,7 @@
 from __future__ import division, print_function, absolute_import, unicode_literals
 
 import six
-from datetime import datetime
+from datetime import datetime, timedelta
 from tzlocal import get_localzone
 from mog_commons import unittest
 from calendar_cli.model import EventTime, Event
@@ -11,11 +11,13 @@ from calendar_cli.operation import *
 
 
 class TestSetting(unittest.TestCase):
+
     @staticmethod
     def _localize(year, month, day, hour, minute):
         return get_localzone().localize(datetime(year, month, day, hour, minute))
 
     def test_parse_args(self):
+        # create
         a0 = ['calendar-cli', 'create', '--date', '20151018', '--start', '1030', '--end', '1100',
               'あいう'.encode('utf-8'), 'えお'.encode('utf-8')]
         s0 = Setting().parse_args(a0)
@@ -27,6 +29,82 @@ class TestSetting(unittest.TestCase):
             EventTime(True, self._localize(2015, 10, 18, 11, 00)),
             'あいう えお'
         ))
+
+        # summary
+        t = datetime.now()
+        today = get_localzone().localize(datetime(t.year, t.month, t.day))
+
+        a = ['calendar-cli']
+        s = Setting().parse_args(a)
+
+        self.assertIsInstance(s.operation, SummaryOperation)
+        self.assertEqual(s.operation.calendar_id, 'primary')
+        self.assertEqual(s.operation.start_time, today)
+        self.assertEqual(s.operation.duration, timedelta(days=1))
+        self.assertEqual(s.operation.format, '[%T] %S%L%C')
+
+        a = ['calendar-cli', '--days', '0']
+        s = Setting().parse_args(a)
+
+        self.assertIsInstance(s.operation, SummaryOperation)
+        self.assertEqual(s.operation.calendar_id, 'primary')
+        self.assertEqual(s.operation.start_time, today)
+        self.assertEqual(s.operation.duration, timedelta(days=1))
+        self.assertEqual(s.operation.format, '[%T] %S%L%C')
+
+        a = ['calendar-cli', '--days', '1']
+        s = Setting().parse_args(a)
+
+        self.assertIsInstance(s.operation, SummaryOperation)
+        self.assertEqual(s.operation.calendar_id, 'primary')
+        self.assertEqual(s.operation.start_time, today)
+        self.assertEqual(s.operation.duration, timedelta(days=2))
+        self.assertEqual(s.operation.format, '%D [%T] %S%L%C')
+
+        a = ['calendar-cli', '--days', '6']
+        s = Setting().parse_args(a)
+
+        self.assertIsInstance(s.operation, SummaryOperation)
+        self.assertEqual(s.operation.calendar_id, 'primary')
+        self.assertEqual(s.operation.start_time, today)
+        self.assertEqual(s.operation.duration, timedelta(days=7))
+        self.assertEqual(s.operation.format, '%D [%T] %S%L%C')
+
+        a = ['calendar-cli', '--days', '6', '--format', '%D %S']
+        s = Setting().parse_args(a)
+
+        self.assertIsInstance(s.operation, SummaryOperation)
+        self.assertEqual(s.operation.calendar_id, 'primary')
+        self.assertEqual(s.operation.start_time, today)
+        self.assertEqual(s.operation.duration, timedelta(days=7))
+        self.assertEqual(s.operation.format, '%D %S')
+
+        a = ['calendar-cli', '--days', '-1']
+        s = Setting().parse_args(a)
+
+        self.assertIsInstance(s.operation, SummaryOperation)
+        self.assertEqual(s.operation.calendar_id, 'primary')
+        self.assertEqual(s.operation.start_time, today - timedelta(days=1))
+        self.assertEqual(s.operation.duration, timedelta(days=2))
+        self.assertEqual(s.operation.format, '%D [%T] %S%L%C')
+
+        a = ['calendar-cli', '--date', '20151018']
+        s = Setting().parse_args(a)
+
+        self.assertIsInstance(s.operation, SummaryOperation)
+        self.assertEqual(s.operation.calendar_id, 'primary')
+        self.assertEqual(s.operation.start_time, self._localize(2015, 10, 18, 0, 0))
+        self.assertEqual(s.operation.duration, timedelta(days=1))
+        self.assertEqual(s.operation.format, '[%T] %S%L%C')
+
+        a = ['calendar-cli', '--date', '20151018', '--days', '-3', '--format', '%S']
+        s = Setting().parse_args(a)
+
+        self.assertIsInstance(s.operation, SummaryOperation)
+        self.assertEqual(s.operation.calendar_id, 'primary')
+        self.assertEqual(s.operation.start_time, self._localize(2015, 10, 15, 0, 0))
+        self.assertEqual(s.operation.duration, timedelta(days=4))
+        self.assertEqual(s.operation.format, '%S')
 
     def test_parse_time_range(self):
         now = self._localize(2015, 10, 19, 9, 30)
