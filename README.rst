@@ -63,7 +63,7 @@ Getting Started
 
 1. Download ``client_secret.json`` from Google Developers Console
    
-* Open `Google API Manager<https://console.developers.google.com/apis/credentials>`_
+* Open `Google API Manager <https://console.developers.google.com/apis/credentials>`_
 * Select or create a project
 * Open API Manager -> Credentials
 
