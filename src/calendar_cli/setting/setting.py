@@ -4,7 +4,7 @@ import re
 from datetime import datetime, timedelta
 from tzlocal import get_localzone
 from calendar_cli.model import EventTime, Event
-from calendar_cli.operation import *
+from calendar_cli.operation import HelpOperation, SummaryOperation, CreateOperation, SetupOperation
 from calendar_cli.setting import arg_parser
 from mog_commons.case_class import CaseClass
 from mog_commons.functional import oget
@@ -132,7 +132,8 @@ class Setting(CaseClass):
                     # show events from several days from today
                     duration = timedelta(days=option.days + 1)
 
-                operation = SummaryOperation(option.calendar, start_time, duration, option.credential, fmt)
+                operation = SummaryOperation(option.calendar, start_time, duration,
+                                             option.credential, fmt, option.separator)
             elif args[0] == 'setup' and len(args) == 2:
                 # setup
                 operation = SetupOperation(args[1], option.credential, option.read_only, option.no_browser)
