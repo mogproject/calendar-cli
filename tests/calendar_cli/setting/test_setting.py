@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from tzlocal import get_localzone
 from mog_commons import unittest
 from calendar_cli.model import EventTime, Event
-from calendar_cli.setting import Setting
+from calendar_cli.setting.setting import Setting
 from calendar_cli.operation import *
 
 

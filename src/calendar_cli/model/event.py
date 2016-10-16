@@ -30,6 +30,9 @@ class EventTime(CaseClass):
         d.update(oget(omap(lambda tz: {'timeZone': str(tz)}, self.datetime_tz.tzinfo), {}))
         return d
 
+    def to_date(self):
+        return self.datetime_tz.date()
+
     @staticmethod
     def parse_dict(d, default_timezone):
         tz = pytz.timezone(default_timezone)  # always read as default timezone
@@ -53,8 +56,8 @@ class Event(CaseClass):
                  creator_email=None,
                  location=None):
         """
-        :param start_datetime: EventTime:
-        :param end_datetime: EventTime:
+        :param start_time: EventTime:
+        :param end_time: EventTime:
         :param summary: unicode:
         :param creator_name: unicode:
         :param creator_email: unicode:

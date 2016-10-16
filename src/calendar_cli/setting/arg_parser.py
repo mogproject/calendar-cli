@@ -77,6 +77,10 @@ def _get_parser():
         ])
     )
     p.add_option(
+        '--separator', dest='separator', default=None, type='string', metavar='SEPARATOR',
+        help='set date separator to SEPARATOR in the summary command (default: None)'
+    )
+    p.add_option(
         '--debug', dest='debug', action='store_true', default=False,
         help='enable debug logging (default: False)'
     )
