@@ -11,7 +11,7 @@ def get_version():
 
 
 setup(
-    name='calendar-cli',
+    name='gcalendar-cli',
     version=get_version(),
     description='Command-line Interface for Google Calendar',
     author='mogproject',

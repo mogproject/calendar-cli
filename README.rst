@@ -4,8 +4,8 @@ calendar-cli
 
 Command-line Interface for Google Calendar
 
-.. image:: https://badge.fury.io/py/calendar-cli.svg
-   :target: http://badge.fury.io/py/calendar-cli
+.. image:: https://badge.fury.io/py/gcalendar-cli.svg
+   :target: http://badge.fury.io/py/gcalendar-cli
    :alt: PyPI version
 
 .. image:: https://travis-ci.org/mogproject/calendar-cli.svg?branch=master
@@ -46,11 +46,11 @@ Installation
 +-------------------------+------------------------------------------+
 | Operation               | Command                                  |
 +=========================+==========================================+
-| Install                 |``pip install calendar-cli``              |
+| Install                 |``pip install gcalendar-cli``             |
 +-------------------------+------------------------------------------+
-| Upgrade                 |``pip install --upgrade calendar-cli``    |
+| Upgrade                 |``pip install --upgrade gcalendar-cli``   |
 +-------------------------+------------------------------------------+
-| Uninstall               |``pip uninstall calendar-cli``            |
+| Uninstall               |``pip uninstall gcalendar-cli``           |
 +-------------------------+------------------------------------------+
 | Check installed version |``calendar-cli --version``                |
 +-------------------------+------------------------------------------+
