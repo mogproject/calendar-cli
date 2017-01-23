@@ -28,7 +28,7 @@ Command-line Interface for Google Calendar
 Dependencies
 ------------
 
-* Python: 2.6 / 2.7
+* Python: 2.7 / 3.4
 * six
 * python-dateutil
 * pytz
